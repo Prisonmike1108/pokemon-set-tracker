@@ -10,6 +10,8 @@
 2. **Double-click it.** It opens in your web browser. I tested it in Chrome-style browsers (Chrome, Edge); others should work but I haven't tried them.
 3. **Tick off cards.** Open the **Sets** tab, pick a set (Base Set, Jungle and Fossil are ready; press **+ Add set** for any other), and check the cards you own. Use the **Portfolio** tab to log cards with condition and what you paid.
 
+Prefer not to download anything? **[Open it online](https://prisonmike1108.github.io/pokemon-set-tracker/)** and start right away. Your collection is saved in your browser for that web address, so it is separate from a downloaded copy; use Export and Import to move between them.
+
 Keep the file somewhere you'll find it, such as your Desktop. Your collection is saved inside your browser on that computer, so use the same browser each time, and press **Export** now and then to save a backup file. **Import** puts it back, or moves it to another computer.
 
 ## What you get
