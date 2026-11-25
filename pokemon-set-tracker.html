@@ -249,7 +249,7 @@
   <div class="grid" id="cards"></div>
   <h2 id="errhead">Errors &amp; Variants</h2>
   <div class="grid" id="errors"></div>
-  <footer>Progress, wishlist and open set tabs are saved in this browser (localStorage). Use Export to back them up or move them to another device. Prices are TCGplayer market data by finish (daily when the local helper is running, otherwise from a free feed that can be weeks old); open a card and use the condition buttons to see live listings on TCGplayer for that condition.</footer>
+  <footer>Progress, wishlist and open set tabs are saved in this browser (localStorage). Use Export to back them up or move them to another device. Prices are TCGplayer market data by finish (fresh with a free JustTCG key added under ⚙, otherwise from a free feed that can be weeks old); open a card and use the condition buttons to see live listings on TCGplayer for that condition.</footer>
 </div>
 <dialog id="zoom" aria-label="Card preview">
   <button id="zclose" aria-label="Close preview">✕</button>
@@ -859,7 +859,7 @@ let setList = null; // [{id,name,series,year,total?,gid?,tcg?}] built from the c
 const setYearText = s => s.date ? new Date(s.date + "T12:00:00").toLocaleDateString(undefined, { month: "short", year: "numeric" }) : (s.year || "");
 async function openAdd() {
   $("setq").value = ""; $("addstatus").textContent = "";
-  $("addsrc").textContent = `Every set on TCGplayer as of ${CATALOG.snap || "the built-in snapshot"}, including promo sets. ` + (HELPER ? "The helper also adds anything newer." : "Sets released after that date need an updated file (or the helper).");
+  $("addsrc").textContent = `Every set on TCGplayer as of ${CATALOG.snap || "the built-in snapshot"}, including promo sets. ` + (HELPER ? "The helper also adds anything newer." : "Sets released after that date will appear in a newer version of this file.");
   adddlg.showModal(); renderSetList();
   if (!setList) await loadSetList();
 }
@@ -1530,7 +1530,7 @@ function openBackfill() {
 bdlg.addEventListener("click", e => { if (e.target === bdlg) { bdlg.close(); } });
 
 // ---- view switching ----
-let view = load(VKEY, "portfolio");
+let view = load(VKEY, "sets");   // first-time visitors land on the set checklists; later visits remember the last tab
 function showView(v) {
   view = v; store(VKEY, v);
   $("view-port").hidden = v !== "portfolio"; $("view-sets").hidden = v !== "sets"; $("setsHead").hidden = v !== "sets";

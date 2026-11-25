@@ -29,7 +29,9 @@ import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-HTML = os.path.join(HERE, "pokemon-set-tracker.html")
+# the tracker page sits next to this script, or one folder up when this script lives in an "extras" folder
+HTML = next((p for p in (os.path.join(HERE, "pokemon-set-tracker.html"), os.path.join(os.path.dirname(HERE), "pokemon-set-tracker.html")) if os.path.exists(p)),
+            os.path.join(HERE, "pokemon-set-tracker.html"))
 STATE = os.path.join(HERE, "tracker-data.json")
 CACHE_DIR = os.path.join(HERE, ".tcgcsv-cache")
 HOST, PORT = "127.0.0.1", 8765
