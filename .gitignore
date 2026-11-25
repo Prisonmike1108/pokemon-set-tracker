@@ -1,0 +1,8 @@
+﻿# Your own data and local caches: never commit these
+tracker-data.json
+.tcgcsv-cache/
+*.bak
+*.bak[0-9]*
+__pycache__/
+*.pyc
+.env
