@@ -1023,7 +1023,7 @@ adddlg.addEventListener("click", e => { if (e.target === adddlg) adddlg.close();
 // ---------- Export / import / reset ----------
 $("export").onclick = () => {
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([JSON.stringify({ version: 4, have, wish, first, holds, hist, tabs, extra, settings: { ...settings, jtKey: undefined, jtBase: undefined } }, null, 2)], { type: "application/json" }));
+  a.href = URL.createObjectURL(new Blob([JSON.stringify({ version: 5, have, wish, first, holds, hist, tabs, extra, sells, settings: { ...settings, jtKey: undefined, jtBase: undefined } }, null, 2)], { type: "application/json" }));
   a.download = "pokemon-set-collection.json";
   a.click();
 };
@@ -1045,7 +1045,8 @@ $("file").onchange = async e => {
         store(XKEY, extra);
       }
       if (Array.isArray(data.tabs)) { tabs = data.tabs.filter(id => SETS[id]); if (!tabs.length) tabs = ["base1"]; if (!tabs.includes(current)) current = tabs[0]; store(TKEY, tabs); store(CKEY, current); }
-      if (data.settings && data.settings.condF) { settings = { ...settings, condF: data.settings.condF }; store(SKEY, settings); }
+      if (data.settings && data.settings.condF) { settings = { ...settings, condF: data.settings.condF, sell: { ...settings.sell, ...(data.settings.sell || {}) } }; store(SKEY, settings); }
+      if (Array.isArray(data.sells)) { sells = data.sells; saveSells(); }
     }
     else have = data; // older export: just the collection
     save(); showView(view); upgradeSets();
