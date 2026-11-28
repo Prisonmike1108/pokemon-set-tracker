@@ -20,6 +20,8 @@ Keep the file somewhere you'll find it, such as your Desktop. Your collection is
 - **Unlimited by default:** prices and logging assume the Unlimited printing, with 1st Edition as its own choice. For Jungle, Fossil, Team Rocket, Gym and Neo, where TCGplayer only has 1st Edition pictures, the app shows Unlimited scans instead.
 - **Portfolio:** total value, profit and loss, top gainers and losers, and a chart over time.
 - **Buy links:** each card links to the live TCGplayer listings for the condition and printing you pick, so you can compare sellers and shipping there.
+- **Prepare to sell:** add the cards you want to sell (from your Portfolio, or search any card), choose the printing, condition and quantity, and get a suggested list price, what you'd keep after TCGplayer's seller fees, and a link to the live listings for that condition. Pick a pricing style (fast sale, fair price, or patient), then copy the list or download it as a CSV. A web page can't read TCGplayer's live listings, so the suggestion comes from the market price and lowest listing price; check the live listings link before you list. The fee rates are editable under the gear button (the defaults are TCGplayer's standard rates when checked: [see their fees page](https://help.tcgplayer.com/hc/en-us/articles/201357836-Fees)).
+- **Themes and a side menu:** a collapsible menu on the left switches between Sets, Portfolio and Prepare to sell. Its Theme button picks Light, Dark or Auto and one of eight Pokémon-type color themes (Classic, Fire, Water, Grass, Electric, Psychic, Fairy, Dark). On a phone the menu opens from a button at the top.
 
 ## Getting fresh prices (optional)
 

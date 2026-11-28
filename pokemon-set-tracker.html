@@ -3,7 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pokémon Base Set Tracker</title>
+<title>Pokémon Set Tracker</title>
+<script>
+// Apply the saved theme right away so the page never flashes the wrong colors.
+(function () { try {
+  var t = JSON.parse(localStorage.getItem("pokemon-theme") || "null") || {}, r = document.documentElement;
+  var dark = t.mode === "dark" || ((t.mode || "auto") === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  if (dark) r.classList.add("dark");
+  if (t.vars) for (var k in t.vars) r.style.setProperty("--" + k, t.vars[k]);
+} catch (e) {} })();
+</script>
 <style>
   :root {
     --bg:#f3f4f8; --card:#fff; --text:#171a22; --muted:#596074; --line:#d9dde7;
@@ -12,14 +21,12 @@
     --unc:#2f5d8a; --unc-bg:#e3eefa; --com:#4b5262; --com-bg:#eceef3;
     --radius:10px; --shadow:0 1px 2px rgba(20,30,60,.08),0 2px 8px rgba(20,30,60,.04);
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
+  :root.dark {
       --bg:#12141a; --card:#1c1f27; --text:#eceef3; --muted:#a3abbd; --line:#2e3340;
       --brand:#0f1d44; --brand-2:#2a4a9a; --ok:#4cc27f; --danger:#ff8a80;
       --holo:#c2a4ff; --holo-bg:#2b2147; --rare:#ffd25a; --rare-bg:#3a2f0e;
       --unc:#8fbbea; --unc-bg:#1b2d44; --com:#b4bbca; --com-bg:#2a2e39;
       --shadow:none;
-    }
   }
   * { box-sizing:border-box; }
   body { margin:0; font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif; background:var(--bg); color:var(--text); }
@@ -95,7 +102,7 @@
   table.pt th:first-child, table.pt td:first-child { text-align:left; } table.pt th { color:var(--muted); font-weight:600; font-size:12px; }
   .conds { display:grid; gap:6px; }
   a.cond { display:flex; justify-content:space-between; align-items:center; gap:8px; min-height:44px; padding:8px 12px; border:1px solid var(--line); border-radius:8px; color:var(--text); text-decoration:none; font-weight:600; background:var(--card); }
-  a.cond:hover { border-color:var(--brand-2); } a.cond span { color:var(--brand-2); font-weight:500; font-size:12.5px; }
+  a.cond:hover { border-color:var(--brand-2); } a.cond span { color:var(--link); font-weight:500; font-size:12.5px; }
   .wishbtn { min-height:40px; margin-top:12px; } .wishbtn.on { border-color:var(--rare); color:var(--rare); }
   dialog#zoom .cap { color:#fff; text-align:center; margin-top:10px; font-weight:600; }
   dialog#zoom #zclose { position:absolute; z-index:3; top:-14px; right:-14px; min-height:40px; min-width:40px; border-radius:50%; padding:0; }
@@ -107,7 +114,7 @@
   .stat.r-W { border-top-color:var(--yellow); }
   #pstatus { color:var(--muted); font-size:13px; align-self:center; }
     :root { --oth:#0e7490; --oth-bg:#d9f3f8; }
-  @media (prefers-color-scheme: dark) { :root { --oth:#6fd3e8; --oth-bg:#12333b; } }
+  :root.dark { --oth:#6fd3e8; --oth-bg:#12333b; }
   .chip.O { background:var(--oth-bg); color:var(--oth); } .stat.r-O { border-top-color:var(--oth); } label.item.r-O { border-left-color:var(--oth); }
   .tabs { display:flex; gap:6px; overflow-x:auto; padding:14px 0 4px; scrollbar-width:thin; }
   .tab { display:flex; align-items:stretch; flex:none; border:1px solid var(--line); border-radius:10px; background:var(--card); overflow:hidden; }
@@ -117,7 +124,7 @@
   .tcount { font-size:12px; font-weight:600; color:var(--muted); font-variant-numeric:tabular-nums; background:var(--com-bg); padding:1px 7px; border-radius:999px; }
   .tab.active .tcount { background:var(--yellow); color:#3a2c00; }
   .tabx { padding:0 10px; color:var(--muted); font-size:18px; line-height:1; } .tabx:hover { color:var(--danger); }
-  .tabadd { flex:none; border-style:dashed; color:var(--brand-2); }
+  .tabadd { flex:none; border-style:dashed; color:var(--link); }
   dialog#adddlg { border:0; border-radius:14px; padding:0; width:min(92vw,520px); max-height:86vh; background:var(--card); color:var(--text); box-shadow:0 12px 48px rgba(0,0,0,.5); }
   dialog#adddlg::backdrop { background:rgba(8,10,16,.7); }
   .addbox { display:flex; flex-direction:column; gap:10px; padding:16px; max-height:86vh; }
@@ -140,12 +147,9 @@
   .empty { color:var(--muted); padding:20px 0; grid-column:1/-1; }
   footer { color:var(--muted); font-size:13px; padding:28px 0 44px; }
   :root { --up:#1a7f45; --down:#c62828; --a0:#2a5db0; --a1:#ffb300; --a2:#8e44ad; --a3:#1a9c6b; --a4:#e4572e; --a5:#607d8b; }
-  @media (prefers-color-scheme: dark) { :root { --up:#4cc27f; --down:#ff8a80; --a0:#6a9cf0; --a1:#ffd25a; --a2:#c2a4ff; --a3:#5fd6a6; --a4:#ff8a65; --a5:#a3b4bd; } }
+  :root.dark { --up:#4cc27f; --down:#ff8a80; --a0:#6a9cf0; --a1:#ffd25a; --a2:#c2a4ff; --a3:#5fd6a6; --a4:#ff8a65; --a5:#a3b4bd; }
   .up { color:var(--up); } .down { color:var(--down); } .flat { color:var(--muted); }
   .topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-  #mainnav { display:flex; gap:4px; background:rgba(255,255,255,.14); padding:4px; border-radius:999px; }
-  #mainnav button { min-height:38px; padding:6px 18px; border:0; border-radius:999px; background:transparent; color:#fff; }
-  #mainnav button.on { background:#fff; color:var(--brand); }
   #setsHead { margin-top:2px; }
   button.primary { background:var(--text); color:var(--bg); border-color:var(--text); }
   button.primary:hover { opacity:.88; border-color:var(--text); }
@@ -200,15 +204,106 @@
   .fields .two { display:grid; grid-template-columns:1fr 1fr; gap:10px; } .ftitle { font-size:20px; font-weight:800; } .hbig b { font-size:26px; }
   .btnrow { display:flex; gap:8px; flex-wrap:wrap; margin-top:4px; }
   .conds.small { gap:5px; margin-top:4px; } .conds.small a.cond { min-height:36px; padding:4px 12px; font-size:13px; }
+  /* ---- app shell: left side menu, theme picker ---- */
+  :root { --sw:232px; --link:color-mix(in srgb,var(--brand-2) 78%,#000); color-scheme:light; }
+  :root.dark { --link:color-mix(in srgb,var(--brand-2) 55%,#fff); color-scheme:dark; }
+  body { background:color-mix(in srgb,var(--bg) 94%,var(--brand-2)); }
+  #main { margin-left:var(--sw); min-height:100vh; transition:margin-left .2s ease; }
+  #side { position:fixed; inset:0 auto 0 0; width:var(--sw); z-index:40; display:flex; flex-direction:column; gap:4px; padding:14px 10px; background:var(--card); border-right:1px solid var(--line); overflow:hidden auto; transition:width .2s ease,transform .2s ease; }
+  #side .brand { display:flex; align-items:center; gap:10px; padding:4px 8px 16px; font-weight:800; letter-spacing:-.01em; white-space:nowrap; }
+  #side .brand svg { width:30px; height:30px; flex:none; }
+  #side button { display:flex; align-items:center; justify-content:flex-start; gap:12px; width:100%; min-height:44px; padding:8px 12px; border:0; border-radius:10px; background:transparent; color:var(--text); font-weight:600; text-align:left; white-space:nowrap; }
+  #side button svg { width:20px; height:20px; flex:none; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  #side button:hover { background:var(--com-bg); }
+  #mainnav { display:flex; flex-direction:column; gap:4px; }
+  #mainnav button.on { background:color-mix(in srgb,var(--brand-2) 15%,transparent); color:var(--link); box-shadow:inset 3px 0 0 var(--brand-2); }
+  .sidefoot { margin-top:auto; display:flex; flex-direction:column; gap:4px; padding-top:10px; border-top:1px solid var(--line); }
+  #side .lbl { overflow:hidden; text-overflow:ellipsis; }
+  #menubtn { display:none; min-height:40px; min-width:40px; padding:0; align-items:center; justify-content:center; border:0; border-radius:10px; background:rgba(255,255,255,.16); color:#fff; }
+  #menubtn svg { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; }
+  header .topbar { justify-content:flex-start; gap:12px; }
+  .scrim { display:none; position:fixed; inset:0; z-index:35; background:rgba(8,10,16,.55); }
+  @media (min-width:860px) {
+    body.side-collapsed { --sw:68px; }
+    body.side-collapsed #side .lbl { display:none; }
+    body.side-collapsed #side .brand { justify-content:center; padding:4px 0 16px; }
+    body.side-collapsed #side button { justify-content:center; padding:8px; }
+    body.side-collapsed #sidecollapse svg { transform:rotate(180deg); }
+  }
+  @media (max-width:859px) {
+    :root { --sw:0px; }
+    #side { width:272px; transform:translateX(-104%); box-shadow:0 0 40px rgba(0,0,0,.4); }
+    body.side-open #side { transform:none; }
+    body.side-open .scrim { display:block; }
+    #menubtn { display:inline-flex; }
+    #sidecollapse { display:none !important; }
+    #themepop { left:12px !important; }
+  }
+  #themepop { position:fixed; z-index:60; left:calc(var(--sw) + 8px); bottom:12px; width:300px; max-width:calc(100vw - 24px); padding:14px; background:var(--card); color:var(--text); border:1px solid var(--line); border-radius:14px; box-shadow:0 12px 40px rgba(0,0,0,.35); }
+  #themepop[hidden] { display:none; }
+  #themepop h4 { margin:0 0 8px; font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+  .seg { display:flex; gap:4px; padding:3px; background:var(--com-bg); border-radius:10px; }
+  .seg button { flex:1; min-height:36px; padding:4px 10px; border:0; border-radius:8px; background:transparent; font-size:13px; color:var(--text); }
+  .seg button[aria-pressed="true"] { background:var(--card); box-shadow:0 1px 3px rgba(0,0,0,.25); color:var(--link); }
+  .swatches { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+  .swatch { display:flex; align-items:center; gap:10px; min-height:46px; padding:6px 10px; border-radius:10px; font-size:13px; text-align:left; }
+  .swatch i { position:relative; width:28px; height:28px; border-radius:50%; flex:none; box-shadow:0 0 0 1px var(--line); }
+  .swatch i s { position:absolute; right:-1px; bottom:-1px; width:11px; height:11px; border-radius:50%; border:2px solid var(--card); }
+  .swatch[aria-pressed="true"] { border-color:var(--brand-2); box-shadow:inset 0 0 0 1px var(--brand-2); }
+
+  /* ---- Prepare to sell ---- */
+  .sellintro { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin:16px 0 4px; }
+  .sellintro .seg { min-width:min(100%,340px); }
+  .sellstats { margin:12px 0; } .sellstats .stat b.up { color:var(--up); } .sellstats .stat b.down { color:var(--down); }
+  .scontrols { position:static !important; }
+  button.primary { background:var(--text); color:var(--bg); border-color:var(--text); }
+  .slist2 { display:flex; flex-direction:column; gap:10px; container-type:inline-size; }
+  .sitem { display:grid; grid-template-columns:56px minmax(140px,1fr) minmax(340px,1.8fr) 112px 140px 124px; gap:12px 16px; align-items:center; padding:12px; background:var(--card); border:1px solid var(--line); border-radius:12px; }
+  .sitem .hthumb { width:56px; }
+  .sctl { display:grid; grid-template-columns:1.15fr 1.25fr 56px; gap:8px; }
+  .sctl label { display:flex; flex-direction:column; gap:2px; font-size:11.5px; color:var(--muted); font-weight:600; min-width:0; }
+  .sctl select, .sctl input { min-height:38px; padding:4px 6px; font-size:13px; color:var(--text); width:100%; }
+  .sprices { display:flex; flex-direction:column; gap:4px; font-variant-numeric:tabular-nums; font-size:13px; }
+  .sprices .k { color:var(--muted); font-size:11.5px; display:block; }
+  .slistat { display:flex; flex-direction:column; gap:1px; font-variant-numeric:tabular-nums; }
+  .slistat .k { color:var(--muted); font-size:11.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
+  .slistat .big { font-size:24px; font-weight:800; letter-spacing:-.02em; }
+  .slistat small { color:var(--muted); }
+  .sact { display:flex; flex-direction:column; gap:6px; align-items:stretch; }
+  .sact a.cond { min-height:36px; padding:4px 12px; font-size:13px; white-space:nowrap; }
+  .sact button { min-height:34px; padding:2px 10px; font-size:13px; color:var(--muted); }
+  .shint { color:var(--muted); font-size:12px; margin-top:3px; line-height:1.35; }
+  .fine { font-size:12.5px; color:var(--muted); margin:16px 2px; line-height:1.5; }
+  @container (max-width:990px) { .sitem { grid-template-columns:56px 1fr; } .sitem .sctl, .sitem .sprices, .sitem .slistat, .sitem .sact { grid-column:1 / -1; } .sprices { flex-direction:row; gap:20px; } .sact { flex-direction:row; flex-wrap:wrap; } }
+  .pickrow { display:flex; align-items:center; gap:10px; padding:8px 4px; border-bottom:1px solid var(--line); font-weight:500; }
+  .pickrow input { width:20px; height:20px; accent-color:var(--ok); flex:none; }
+  .pickrow img { width:34px; aspect-ratio:5/7; object-fit:cover; border-radius:4px; background:var(--com-bg); flex:none; }
+  .pickrow small { color:var(--muted); display:block; font-weight:400; }
+  .picklist { max-height:52vh; overflow:auto; border:1px solid var(--line); border-radius:8px; padding:0 8px; margin:8px 0; }
   @media (max-width:480px) { .controls select, .controls button { flex:1 1 calc(50% - 4px); } #reset { flex-basis:100%; } #sort { flex-basis:100%; } }
   @media (prefers-reduced-motion: reduce) { * { transition:none !important; } }
 </style>
 </head>
 <body>
+<div class="scrim" id="scrim"></div>
+<aside id="side" aria-label="Menu">
+  <div class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" style="fill:#f4f5f8;stroke:#20242e;stroke-width:2"/><path d="M2 16a14 14 0 0 1 28 0z" style="fill:var(--brand-2);stroke:#20242e;stroke-width:2"/><path d="M2 16h28" style="stroke:#20242e;stroke-width:2"/><circle cx="16" cy="16" r="4.2" style="fill:#f4f5f8;stroke:#20242e;stroke-width:2"/></svg><span class="lbl">Pokémon Tracker</span></div>
+  <nav id="mainnav" aria-label="Main">
+    <button type="button" data-v="sets" title="Sets"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg><span class="lbl">Sets</span></button>
+    <button type="button" data-v="portfolio" title="Portfolio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 15l3-4 3 2 4-6"/></svg><span class="lbl">Portfolio</span></button>
+    <button type="button" data-v="sell" title="Prepare to sell"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4h8l9 9-8 8-9-9z"/><circle cx="7.5" cy="8.5" r="1.2"/></svg><span class="lbl">Prepare to sell</span></button>
+  </nav>
+  <div class="sidefoot">
+    <button type="button" id="themebtn" title="Theme" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-1 1.6-2-.4-1 .3-2 1.4-2H17a4 4 0 0 0 4-4c0-5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/></svg><span class="lbl" id="themelbl">Theme</span></button>
+    <button type="button" id="sidegear" title="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg><span class="lbl">Settings</span></button>
+    <button type="button" id="sidecollapse" title="Collapse menu" aria-label="Collapse menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6l-6 6 6 6M19 6l-6 6 6 6"/></svg><span class="lbl" id="collapselbl">Collapse</span></button>
+  </div>
+</aside>
+<div id="themepop" role="dialog" aria-label="Theme" hidden></div>
+<div id="main">
 <header>
   <div class="wrap">
-    <div class="topbar"><h1>Pokémon Tracker</h1>
-      <nav id="mainnav" aria-label="Main"><button type="button" data-v="portfolio" class="on">Portfolio</button><button type="button" data-v="sets">Sets</button></nav></div>
+    <div class="topbar"><button type="button" id="menubtn" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><h1 id="viewtitle">Sets</h1></div>
     <div id="setsHead" hidden>
     <p class="sub" id="sub"></p>
     <div class="progress-row"><div id="summary" aria-live="polite"></div><div id="pct"></div></div>
@@ -217,6 +312,7 @@
   </div>
 </header>
 <div class="wrap" id="view-port" hidden><div id="portfolio"></div></div>
+<div class="wrap" id="view-sell" hidden><div id="sell"></div></div>
 <div class="wrap" id="view-sets" hidden>
   <nav class="tabs" id="tabs" role="tablist" aria-label="Sets"></nav>
   <div class="stats" id="stats"></div>
@@ -251,6 +347,7 @@
   <div class="grid" id="errors"></div>
   <footer>Progress, wishlist and open set tabs are saved in this browser (localStorage). Use Export to back them up or move them to another device. Prices are TCGplayer market data by finish (fresh with a free JustTCG key added under ⚙, otherwise from a free feed that can be weeks old); open a card and use the condition buttons to see live listings on TCGplayer for that condition.</footer>
 </div>
+</div>
 <dialog id="zoom" aria-label="Card preview">
   <button id="zclose" aria-label="Close preview">✕</button>
   <div class="zwrap">
@@ -262,6 +359,7 @@
 <dialog id="hdlg" class="bigdlg" aria-label="Edit card"><div class="addbox" id="hbody"></div></dialog>
 <dialog id="sdlg" class="bigdlg" aria-label="Condition pricing"><div class="addbox" id="sbody"></div></dialog>
 <dialog id="bdlg" class="bigdlg" aria-label="Backfill price history"><div class="addbox" id="bbody"></div></dialog>
+<dialog id="sldg" class="bigdlg" aria-label="Add from my Portfolio"><div class="addbox" id="slbody"></div></dialog>
 <div id="toast" role="status" hidden></div>
 <dialog id="adddlg" aria-label="Add a set">
   <div class="addbox">
@@ -722,6 +820,7 @@ async function jtCall(ids) {   // one batch of <= 20 TCGplayer product ids (the 
 function jtTargets(setId) {   // product id -> { num, map } for every card of this set you own, wishlisted or hold
   const s = SETS[setId], nums = new Set();
   for (const h of holds) if (h.set === setId) nums.add(h.num);
+  for (const s2 of sells) if (s2.set === setId) nums.add(s2.num);
   for (const c of [...s.cards, ...s.errors]) if (have[c.id] || first[c.id] || wish[c.id]) nums.add(c.num);
   const out = new Map(), xg = (EXTRA_GROUPS[setId] || [])[0];
   for (const n of nums) {
@@ -800,6 +899,7 @@ async function updatePrices(auto, id = current) {
     recordHistory(id);
     if (view === "sets" && id === current) { render(); updateStatusLine(); }
     if (view === "portfolio") renderPortfolio();
+    if (view === "sell") renderSell();
     if (dlg.open) { const c = findCard(dlg.dataset.id); if (c) renderInfo(c); }
   } catch (err) {
     if (id === current) $("pstatus").textContent = (auto ? "Couldn’t refresh prices automatically" : "Couldn’t reach the price service") + " (it is sometimes down) — " + (pricesAll[id] ? "showing the last saved prices." : "try again in a minute.");
@@ -967,6 +1067,7 @@ const COND_SHORT = { "Near Mint": "NM", "Lightly Played": "LP", "Moderately Play
 const DEFAULT_CONDF = { "Near Mint": 1, "Lightly Played": 0.85, "Moderately Played": 0.7, "Heavily Played": 0.5, "Damaged": 0.35 };
 let settings = load(SKEY, {});
 settings.condF = { ...DEFAULT_CONDF, ...(settings.condF || {}) };
+settings.sell = { strategy: "fair", commission: 10.75, processing: 2.5, perOrder: 0.30, ...(settings.sell || {}) };   // fees: TCGplayer's standard marketplace rates when checked
 let holds = load(HKEY, []);   // { id, set, num, name, setName, printing, cond, qty, cost, manual, added, note }
 let hist = load(HIST, {});    // "set|num|finish" -> [[ms, marketPrice], ...]  (raw market price, before condition adjustment)
 let range = load(RKEY, "30D");
@@ -1212,8 +1313,8 @@ function allSetOptions() {
   return `<option value="">All my sets</option>` + ids.map(id => `<option value="${id}">${esc(SETS[id].name)}</option>`).join("")
     + (rest.length ? `<optgroup label="More sets (loads on select)">${rest.map(s => `<option value="${s.id}">${esc(s.name)}${s.year ? " · " + s.year : ""}</option>`).join("")}</optgroup>` : "");
 }
-async function openAddCard(card) {
-  pstate = { set: "", q: "", card: null };
+async function openAddCard(card, opts = {}) {
+  pstate = { set: "", q: "", card: null, mode: opts.mode || "portfolio" };
   pdlg.showModal();
   if (!setList) { loadSetList().then(() => { if (pdlg.open && !pstate.card) renderAddSearch(); }); }
   if (card) return pickCard(card);
@@ -1264,17 +1365,17 @@ function defaultPrinting(c) {
   return ["holofoil", "unlimitedHolofoil", "normal", "unlimited"].find(k => p[k]) || Object.keys(p)[0] || printingsFor(c)[0];
 }
 function renderAddForm(c) {
-  const keys = printingsFor(c), def = defaultPrinting(c);
-  $("pbody").innerHTML = `<div class="addhead"><h3>Add to portfolio</h3><button type="button" id="pclose" aria-label="Close">✕</button></div>
+  const keys = printingsFor(c), def = defaultPrinting(c), sellMode = pstate.mode === "sell";
+  $("pbody").innerHTML = `<div class="addhead"><h3>${sellMode ? "Add to sell list" : "Add to portfolio"}</h3><button type="button" id="pclose" aria-label="Close">✕</button></div>
     <div class="pform"><div class="pcard"><img src="${imgUrl(c, true)}" alt="${esc(c.name)} card"></div>
     <form id="pf" class="fields"><div><div class="ftitle">${esc(c.name)}</div><div class="muted">${esc(SETS[c.set].name)} · ${esc(c.num)}/${SETS[c.set].cards.length}</div></div>
       <label>Printing<select name="printing">${keys.map(k => `<option value="${k}"${k === def ? " selected" : ""}>${esc(finishLabel(c.set, k))}</option>`).join("")}</select></label>
       <label>Condition<select name="cond">${COND_LIST.map(k => `<option>${k}</option>`).join("")}</select></label>
-      <div class="two"><label>Quantity<input name="qty" type="number" min="1" step="1" value="1" required></label>
+      ${sellMode ? `<label>Quantity<input name="qty" type="number" min="1" step="1" value="1" required></label>` : `<div class="two"><label>Quantity<input name="qty" type="number" min="1" step="1" value="1" required></label>
       <label>Paid each (optional)<input name="cost" type="number" min="0" step="0.01" placeholder="$"></label></div>
-      <label>Date acquired<input name="date" type="date" value="${new Date().toISOString().slice(0, 10)}"></label>
+      <label>Date acquired<input name="date" type="date" value="${new Date().toISOString().slice(0, 10)}"></label>`}
       <div id="pquote" class="muted"></div>
-      <div class="btnrow"><button type="submit" class="primary">Add to portfolio</button><button type="button" id="pagain">Add & find another</button></div></form></div>`;
+      <div class="btnrow"><button type="submit" class="primary">${sellMode ? "Add to sell list" : "Add to portfolio"}</button><button type="button" id="pagain">Add & find another</button></div></form></div>`;
   $("pclose").onclick = () => pdlg.close();
   const f = $("pf");
   const quote = () => {
@@ -1285,6 +1386,13 @@ function renderAddForm(c) {
   };
   f.printing.onchange = f.cond.onchange = quote; quote();
   const add = again => {
+    if (sellMode) {
+      sells.unshift({ id: uid(), set: c.set, num: c.num, name: c.name, setName: SETS[c.set].name, printing: f.printing.value, cond: f.cond.value, qty: Math.max(1, parseInt(f.qty.value, 10) || 1) });
+      saveSells(); maybeFetchPrices(c.set); pstate.card = null;
+      if (view === "sell") renderSell();
+      if (again) { pstate.q = ""; renderAddSearch(); $("pstat").textContent = `Added ${c.name}.`; } else pdlg.close();
+      return;
+    }
     holds.unshift({ id: uid(), set: c.set, num: c.num, name: c.name, setName: SETS[c.set].name, printing: f.printing.value, cond: f.cond.value,
       qty: Math.max(1, parseInt(f.qty.value, 10) || 1), cost: numOrNull(f.cost.value), manual: null, added: f.date.value ? f.date.value + "T12:00:00" : new Date().toISOString(), note: "" });
     saveHolds(); recordHistory(c.set); pstate.card = null; autoBackfill([c.set]);
@@ -1341,7 +1449,7 @@ function openHolding(id) {
       <label>Set my own price (each)<input id="f-manual" type="number" min="0" step="0.01" value="${h.manual ?? ""}" placeholder="Leave empty to use the market price"></label>
       <label>Notes<input id="f-note" type="text" value="${esc(h.note || "")}" placeholder="Where you found it, grade, etc."></label>
       ${pid ? `<div class="conds small"><div class="muted">See live listings on TCGplayer:</div>${COND_LIST.map(k => `<a class="cond" href="${condUrl(pid, k, lt.printing)}" target="_blank" rel="noopener noreferrer">${k}<span>View ↗</span></a>`).join("")}</div>` : ""}
-      <div class="btnrow"><button type="button" id="hdel" class="danger">Remove from portfolio</button></div></div></div>`;
+      <div class="btnrow"><button type="button" id="hsell">Prepare to sell</button><button type="button" id="hdel" class="danger">Remove from portfolio</button></div></div></div>`;
   hdlg.dataset.id = id; hdlg.showModal();
   const pts = (hist[hkey(h.set, h.num, h.printing)] || []).map(p => [p[0], h.manual != null ? h.manual : p[1] * condF(h)]);
   if (pts.length && pts[pts.length - 1][0] < Date.now() - 36e5 && u != null) pts.push([Date.now(), u]);
@@ -1356,6 +1464,7 @@ function openHolding(id) {
   ["f-printing", "f-cond"].forEach(i => $(i).onchange = () => { upd(); openHolding(id); });
   ["f-qty", "f-cost", "f-manual", "f-note"].forEach(i => $(i).onchange = upd);
   $("hclose").onclick = () => hdlg.close();
+  $("hsell").onclick = () => { if (!sells.some(s => s.set === h.set && s.num === h.num && s.printing === h.printing && s.cond === h.cond)) { sells.unshift({ id: uid(), set: h.set, num: h.num, name: h.name, setName: h.setName, printing: h.printing, cond: h.cond, qty: h.qty }); saveSells(); } hdlg.close(); showView("sell"); maybeRefreshSells(); };
   $("hdel").onclick = () => { if (confirm(`Remove ${h.name} from your portfolio?`)) { holds = holds.filter(x => x.id !== id); saveHolds(); hdlg.close(); renderPortfolio(); } };
 }
 hdlg.addEventListener("click", e => { if (e.target === hdlg) hdlg.close(); });
@@ -1363,7 +1472,7 @@ hdlg.addEventListener("click", e => { if (e.target === hdlg) hdlg.close(); });
 // ---- condition pricing settings ----
 const sdlg = $("sdlg");
 function openSettings() {
-  const rerender = () => { if (view === "portfolio") renderPortfolio(); else render(); };
+  const rerender = () => { if (view === "portfolio") renderPortfolio(); else if (view === "sell") renderSell(); else render(); };
   $("sbody").innerHTML = `<div class="addhead"><h3>Settings</h3><button type="button" id="sclose" aria-label="Close">✕</button></div>
     <h4 class="sh">Fresh prices (free)</h4>
     <p class="muted">Prices change daily, but a web page can’t read TCGplayer directly. A free <b>JustTCG</b> key fixes that: this page asks JustTCG for the cards you own, wishlist or hold, including real prices for each condition. ${HELPER ? "The helper is running, so you already get daily prices for whole sets; a key is optional." : ""}</p>
@@ -1372,6 +1481,11 @@ function openSettings() {
       <div class="btnrow"><button type="submit" class="primary" id="ksave">Save &amp; test</button>${settings.jtKey ? '<button type="button" id="kremove" class="danger">Remove key</button>' : ""}</div>
       <div id="kstat" class="muted" role="status"></div>
       <div class="muted">The key is saved only in this browser and is sent only to JustTCG. It is left out of Export files.</div></form>
+    <h4 class="sh">Selling fees (Prepare to sell)</h4>
+    <p class="muted">Used to estimate what you keep after TCGplayer’s seller fees. The defaults are TCGplayer’s standard marketplace rates when I checked: a 10.75% commission and 2.5% plus $0.30 per order for payment processing. Fees change, so confirm them on <a href="https://help.tcgplayer.com/hc/en-us/articles/201357836-Fees" target="_blank" rel="noopener noreferrer">TCGplayer’s fees page</a> and edit them here.</p>
+    <form id="ff" class="fields"><div class="two"><label>Commission %<input name="commission" type="number" min="0" max="50" step="0.01" value="${settings.sell.commission}"></label><label>Payment processing %<input name="processing" type="number" min="0" max="50" step="0.01" value="${settings.sell.processing}"></label></div>
+      <label>Per-order fee ($)<input name="perOrder" type="number" min="0" step="0.01" value="${settings.sell.perOrder}"></label>
+      <div class="btnrow"><button type="submit" class="primary">Save fees</button></div></form>
     <h4 class="sh">Condition pricing</h4>
     <p class="muted">When JustTCG has a price for a card’s condition, that real price is used. Otherwise a condition is valued as a percentage of the Near Mint price — my starting estimates, so adjust them to match what you see selling. Setting your own price on a card overrides all of this.</p>
     <form id="sf" class="fields">${COND_LIST.map(k => `<label>${k}<input type="number" min="1" max="100" step="1" name="${k}" value="${Math.round(settings.condF[k] * 100)}"> %</label>`).join("")}
@@ -1398,6 +1512,7 @@ function openSettings() {
   if ($("kremove")) $("kremove").onclick = () => { delete settings.jtKey; store(SKEY, settings); openSettings(); rerender(); };
   $("sf").onsubmit = e => { e.preventDefault(); for (const k of COND_LIST) settings.condF[k] = Math.min(1, Math.max(0.01, (+e.target[k].value || 100) / 100)); store(SKEY, settings); sdlg.close(); rerender(); };
   $("sreset").onclick = () => { settings.condF = { ...DEFAULT_CONDF }; store(SKEY, settings); sdlg.close(); rerender(); };
+  $("ff").onsubmit = e => { e.preventDefault(); const f = e.target; settings.sell.commission = +f.commission.value || 0; settings.sell.processing = +f.processing.value || 0; settings.sell.perOrder = +f.perOrder.value || 0; store(SKEY, settings); sdlg.close(); rerender(); };
 }
 sdlg.addEventListener("click", e => { if (e.target === sdlg) sdlg.close(); });
 
@@ -1529,13 +1644,244 @@ function openBackfill() {
 }
 bdlg.addEventListener("click", e => { if (e.target === bdlg) { bdlg.close(); } });
 
+// ---- themes (Pokémon types) and the left side menu ----
+// Each theme: [header dark end, header light end, accent] for light mode and for dark mode.
+const THEMES = {
+  classic:  { name: "Classic",  light: ["#1d3a8a", "#2a5db0", "#ffcb05"], dark: ["#0f1d44", "#2a4a9a", "#ffcb05"] },
+  fire:     { name: "Fire",     light: ["#8f2a0c", "#d4561c", "#ffc247"], dark: ["#4a150a", "#b8481a", "#ffb347"] },
+  water:    { name: "Water",    light: ["#0b3a78", "#2278c8", "#8fe0ff"], dark: ["#08203f", "#1f6fc0", "#7fd3ff"] },
+  grass:    { name: "Grass",    light: ["#1b5a2c", "#2e8540", "#d4f56b"], dark: ["#0e3318", "#2f8a40", "#c6f26b"] },
+  electric: { name: "Electric", light: ["#6b4f00", "#946d00", "#ffe14d"], dark: ["#3a2c00", "#8f6d00", "#ffe14d"] },
+  psychic:  { name: "Psychic",  light: ["#4a1a6b", "#8a42c4", "#f4b0ff"], dark: ["#2a0f40", "#7a38b0", "#f0a8ff"] },
+  fairy:    { name: "Fairy",    light: ["#9a2560", "#c8487f", "#ffd6ec"], dark: ["#4d1230", "#b53a72", "#ffc8e4"] },
+  dark:     { name: "Dark",     light: ["#1a1c24", "#3b3f4f", "#e9c46a"], dark: ["#0b0c10", "#2c2f3b", "#e9c46a"] },
+};
+const THEME_KEY = "pokemon-theme", SIDE_KEY = "pokemon-sidebar";
+let theme = load(THEME_KEY, {});
+theme = { type: THEMES[theme.type] ? theme.type : "classic", mode: ["auto", "light", "dark"].includes(theme.mode) ? theme.mode : "auto" };
+const systemDark = matchMedia("(prefers-color-scheme: dark)");
+const isDark = () => theme.mode === "dark" || (theme.mode === "auto" && systemDark.matches);
+function applyTheme() {
+  const dark = isDark(), root = document.documentElement, c = THEMES[theme.type][dark ? "dark" : "light"];
+  root.classList.toggle("dark", dark);
+  const vars = { brand: c[0], "brand-2": c[1], yellow: c[2] };
+  for (const [k, v] of Object.entries(vars)) root.style.setProperty("--" + k, v);
+  store(THEME_KEY, { type: theme.type, mode: theme.mode, vars });   // the saved colors let the page paint in your theme before this script runs
+  $("themelbl").textContent = "Theme: " + THEMES[theme.type].name;
+  renderThemePop();
+}
+systemDark.addEventListener("change", () => { if (theme.mode === "auto") applyTheme(); });
+
+function renderThemePop() {
+  const pop = $("themepop"); if (pop.hidden) return;
+  const dark = isDark();
+  pop.innerHTML = `<h4>Mode</h4><div class="seg" role="group" aria-label="Light or dark">${["auto", "light", "dark"].map(m => `<button type="button" data-mode="${m}" aria-pressed="${theme.mode === m}">${{ auto: "Auto", light: "Light", dark: "Dark" }[m]}</button>`).join("")}</div>
+    <h4 style="margin-top:14px">Theme</h4><div class="swatches">${Object.entries(THEMES).map(([id, t]) => { const c = t[dark ? "dark" : "light"]; return `<button type="button" class="swatch" data-theme="${id}" aria-pressed="${theme.type === id}"><i style="background:linear-gradient(135deg,${c[0]},${c[1]})"><s style="background:${c[2]}"></s></i>${t.name}</button>`; }).join("")}</div>
+    <div class="muted" style="margin-top:10px;font-size:12px">Auto follows your computer’s light or dark setting.</div>`;
+  pop.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { theme.mode = b.dataset.mode; applyTheme(); });
+  pop.querySelectorAll("[data-theme]").forEach(b => b.onclick = () => { theme.type = b.dataset.theme; applyTheme(); });
+}
+function toggleThemePop(open) {
+  const pop = $("themepop"); pop.hidden = open === undefined ? !pop.hidden : !open;
+  $("themebtn").setAttribute("aria-expanded", String(!pop.hidden));
+  renderThemePop();
+}
+$("themebtn").onclick = e => { e.stopPropagation(); toggleThemePop(); };
+addEventListener("click", e => { const pop = $("themepop"); if (!pop.hidden && !pop.contains(e.target) && !$("themebtn").contains(e.target)) toggleThemePop(false); });
+addEventListener("keydown", e => { if (e.key === "Escape") { toggleThemePop(false); document.body.classList.remove("side-open"); } });
+
+let sideCollapsed = !!load(SIDE_KEY, false);
+function applySidebar() {
+  document.body.classList.toggle("side-collapsed", sideCollapsed);
+  $("sidecollapse").setAttribute("aria-label", sideCollapsed ? "Expand menu" : "Collapse menu");
+  $("sidecollapse").title = sideCollapsed ? "Expand menu" : "Collapse menu";
+  $("collapselbl").textContent = sideCollapsed ? "Expand" : "Collapse";
+}
+$("sidecollapse").onclick = () => { sideCollapsed = !sideCollapsed; store(SIDE_KEY, sideCollapsed); applySidebar(); };
+$("menubtn").onclick = () => document.body.classList.toggle("side-open");
+$("scrim").onclick = () => document.body.classList.remove("side-open");
+$("sidegear").onclick = () => { document.body.classList.remove("side-open"); openSettings(); };
+applyTheme(); applySidebar();
+
+// ====================================================================
+// Prepare to sell: what to list each card at, from TCGplayer prices
+// ====================================================================
+const SELLKEY = "pokemon-sell-list";
+let sells = load(SELLKEY, []);   // { id, set, num, name, setName, printing, cond, qty }
+const saveSells = () => store(SELLKEY, sells);
+const STRATS = {
+  fast: { label: "Fast sale", note: "Priced just under the lowest current listing, so it sells quickly." },
+  fair: { label: "Fair price", note: "Priced at the TCGplayer market price." },
+  patient: { label: "Patient", note: "A little above market, for when you can wait for the right buyer." },
+};
+const feeCfg = () => ({ rate: ((+settings.sell.commission || 0) + (+settings.sell.processing || 0)) / 100, perOrder: +settings.sell.perOrder || 0 });
+
+// A suggested listing price for one card, from the market price for its condition and the lowest current listing.
+function sellQuote(it) {
+  const e = pricesAll[it.set]?.cards?.[it.num]?.p?.[it.printing];
+  if (!e) return { price: null, why: "No price data yet. Press Update prices." };
+  const nm = e.market, real = e.cond && e.cond[it.cond] != null ? e.cond[it.cond] : null;
+  const ratio = real != null && nm > 0 ? real / nm : (settings.condF[it.cond] ?? 1);
+  const market = real != null ? real : (nm != null ? nm * ratio : null);
+  const low = e.low != null ? e.low * ratio : null;   // the feed's lowest listing is a Near Mint figure, so it is scaled to this condition
+  if (market == null && low == null) return { price: null, why: "No market price for this printing." };
+  const strat = settings.sell.strategy;
+  let base;
+  if (strat === "fast") {
+    // never chase a low listing more than 15% below market: it is often a damaged copy or a stale price
+    const lowOk = low != null ? Math.max(low, (market ?? low) * 0.85) : null;
+    base = lowOk != null ? Math.min(market ?? lowOk, lowOk) * 0.99 : market * 0.95;
+  } else if (strat === "patient") base = (market ?? low) * 1.07;
+  else base = market ?? low;
+  const price = Math.max(0.25, Math.round(base * 100) / 100);
+  return { price, market, low, nm, real: real != null, ratio };
+}
+function sellBasis(it, q) {
+  if (q.price == null) return q.why;
+  const marketLine = q.market == null ? "No market price"
+    : q.real ? `Market ${money(q.market)} (real ${it.cond} price)`
+    : it.cond === "Near Mint" ? `Market ${money(q.market)}`
+    : `Market ${money(q.market)} (Near Mint ${money(q.nm)} × ${Math.round(q.ratio * 100)}% estimate)`;
+  const lowLine = q.low == null ? "" : ` · lowest listing about ${money(q.low)}${it.cond === "Near Mint" ? "" : " for this condition"}`;
+  return marketLine + lowLine;
+}
+
+function renderSell() {
+  const root = $("sell"); if (!root) return;
+  const cfg = feeCfg(), strat = settings.sell.strategy;
+  const rows = sells.map(it => ({ it, q: sellQuote(it) })), priced = rows.filter(x => x.q.price != null);
+  const qty = sells.reduce((s, it) => s + it.qty, 0);
+  const gross = priced.reduce((s, x) => s + x.q.price * x.it.qty, 0);
+  const fees = gross * cfg.rate + (priced.length ? cfg.perOrder : 0), net = Math.max(0, gross - fees);
+  root.innerHTML = `
+    <div class="sellintro"><div class="seg" role="group" aria-label="Pricing style">${Object.entries(STRATS).map(([k, s]) => `<button type="button" data-strat="${k}" aria-pressed="${strat === k}">${s.label}</button>`).join("")}</div>
+      <div class="muted">${STRATS[strat].note}</div></div>
+    <section class="stats sellstats">
+      <div class="stat"><b>${qty}</b><span>${sells.length} listing${sells.length === 1 ? "" : "s"} to prepare</span></div>
+      <div class="stat"><b>${money(gross)}</b><span>Suggested total</span></div>
+      <div class="stat"><b class="down">${fees ? "−" + money(fees) : "$0.00"}</b><span>Est. TCGplayer fees</span></div>
+      <div class="stat r-U"><b class="up">${money(net)}</b><span>Est. you keep</span></div>
+    </section>
+    <div class="controls scontrols">
+      <button type="button" id="sadd" class="primary">+ Add card</button>
+      <button type="button" id="sport">Add from my Portfolio</button>
+      <button type="button" id="supd">Update prices</button>
+      <button type="button" id="scopy">Copy list</button>
+      <button type="button" id="scsv">Download CSV</button>
+      <button type="button" id="sgear2" aria-label="Fee settings" title="Fee and condition settings">⚙</button>
+    </div>
+    <div id="slist" class="slist2"></div>
+    <p class="fine">Suggestions use TCGplayer’s market price and lowest listing. Without a JustTCG key, prices for conditions below Near Mint are percentages of the Near Mint price (adjust them under ⚙). A web page can’t read TCGplayer’s live listings, so press <b>Live listings</b> on a card to see the current competition for that condition before you list. Fee estimates use the rates under ⚙ and assume one order; shipping isn’t included. These are estimates, not guarantees.</p>`;
+  root.querySelectorAll("[data-strat]").forEach(b => b.onclick = () => { settings.sell.strategy = b.dataset.strat; store(SKEY, settings); renderSell(); });
+  $("sadd").onclick = () => openAddCard(null, { mode: "sell" });
+  $("sport").onclick = openSellFromPortfolio;
+  $("supd").onclick = updateSellPrices;
+  $("scopy").onclick = async () => {
+    if (!sells.length) { toast("Nothing to copy yet."); return; }
+    const text = sellText();
+    if (await copyText(text)) { toast("List copied."); return; }
+    // the browser blocked automatic copying: show the text, already selected, to copy by hand
+    $("slbody").innerHTML = `<div class="addhead"><h3>Copy your list</h3><button type="button" id="slclose" aria-label="Close">✕</button></div><p class="muted">Your browser didn’t allow automatic copying. Copy the text below instead.</p><textarea id="sltext" readonly rows="10" style="width:100%;font:inherit;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--text)">${esc(text)}</textarea>`;
+    sldg.showModal(); $("slclose").onclick = () => sldg.close(); $("sltext").focus(); $("sltext").select();
+  };
+  $("scsv").onclick = downloadSellCsv;
+  $("sgear2").onclick = () => openSettings();
+  const list = $("slist");
+  if (!sells.length) {
+    list.innerHTML = `<div class="pempty"><div class="pe-art">🏷️</div><h3>Nothing to sell yet</h3><p>Add the cards you want to list. Pick the printing and condition and you’ll get a suggested price, what you’d keep after fees, and a link to the live TCGplayer listings.</p>
+      <button type="button" class="primary" id="se-add">+ Add a card</button> <button type="button" id="se-port">Add from my Portfolio</button></div>`;
+    $("se-add").onclick = () => openAddCard(null, { mode: "sell" }); $("se-port").onclick = openSellFromPortfolio;
+    return;
+  }
+  for (const { it, q } of rows) {
+    const card = SETS[it.set] && SETS[it.set].cards.find(c => c.num === it.num);
+    const keys = card ? printingsFor(card) : [it.printing]; if (!keys.includes(it.printing)) keys.push(it.printing);
+    const lt = listingTarget(it.set, it.num, it.printing);
+    const el = document.createElement("div"); el.className = "sitem";
+    el.innerHTML = `<img class="hthumb" src="${holdingThumb(it)}" alt="" loading="lazy">
+      <div class="smain"><div class="hname">${esc(it.name)}</div><div class="hsub">${esc(it.setName || (SETS[it.set] ? SETS[it.set].name : it.set))} · ${esc(it.num)}</div><div class="shint">${esc(sellBasis(it, q))}</div></div>
+      <div class="sctl"><label>Printing<select data-f="printing">${keys.map(k => `<option value="${k}"${k === it.printing ? " selected" : ""}>${esc(finishLabel(it.set, k))}</option>`).join("")}</select></label>
+        <label>Condition<select data-f="cond">${COND_LIST.map(k => `<option${k === it.cond ? " selected" : ""}>${k}</option>`).join("")}</select></label>
+        <label>Qty<input data-f="qty" type="number" min="1" step="1" value="${it.qty}"></label></div>
+      <div class="sprices"><div><span class="k">Market</span><b>${q.market == null ? "–" : money(q.market)}</b></div><div><span class="k">Lowest listing</span><b>${q.low == null ? "–" : money(q.low)}</b></div></div>
+      <div class="slistat"><span class="k">List at</span><span class="big">${q.price == null ? "–" : money(q.price)}</span><small>${q.price == null ? "" : "you keep about " + money(q.price * (1 - cfg.rate)) + " each"}</small></div>
+      <div class="sact">${lt.pid ? `<a class="cond" href="${condUrl(lt.pid, it.cond, lt.printing)}" target="_blank" rel="noopener noreferrer">Live listings<span>↗</span></a>` : ""}<button type="button" data-f="remove" aria-label="Remove ${esc(it.name)} from the sell list">Remove</button></div>`;
+    el.querySelectorAll("[data-f]").forEach(c => {
+      const f = c.dataset.f;
+      if (f === "remove") c.onclick = () => { sells = sells.filter(x => x.id !== it.id); saveSells(); renderSell(); };
+      else c.onchange = () => { it[f] = f === "qty" ? Math.max(1, parseInt(c.value, 10) || 1) : c.value; saveSells(); renderSell(); };
+    });
+    list.appendChild(el);
+  }
+}
+
+async function updateSellPrices() {
+  const sets = [...new Set(sells.map(s => s.set))], b = $("supd");
+  if (!sets.length) { toast("Add a card first."); return; }
+  if (b) { b.disabled = true; b.textContent = "Updating…"; }
+  await Promise.all(sets.map(s => updatePrices(false, s)));
+  if (view === "sell") renderSell();
+}
+function maybeRefreshSells() { for (const s of new Set(sells.map(i => i.set))) maybeFetchPrices(s); }
+
+function sellText() {
+  const cfg = feeCfg();
+  const lines = sells.map(it => { const q = sellQuote(it);
+    return `${it.qty}x ${it.name} - ${it.setName || it.set} #${it.num} - ${finishLabel(it.set, it.printing)} - ${it.cond} - ${q.price == null ? "no price" : "list at " + money(q.price)}`; });
+  const gross = sells.reduce((s, it) => s + (sellQuote(it).price || 0) * it.qty, 0);
+  return `Prepare to sell (${new Date().toLocaleDateString()})\n` + lines.join("\n") + `\nSuggested total ${money(gross)}; est. you keep about ${money(Math.max(0, gross * (1 - cfg.rate) - cfg.perOrder))} after fees.`;
+}
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; }
+  catch (e) {
+    const ta = document.createElement("textarea"); ta.value = t; ta.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand("copy"); } catch (e2) {}
+    ta.remove(); return ok;
+  }
+}
+function downloadSellCsv() {
+  if (!sells.length) { toast("Nothing to download yet."); return; }
+  const cfg = feeCfg(), cell = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
+  const head = ["Card", "Set", "Number", "Printing", "Condition", "Quantity", "Market price", "Lowest listing", "List at", "Est. you keep each"];
+  const rows = sells.map(it => { const q = sellQuote(it);
+    return [it.name, it.setName || it.set, it.num, finishLabel(it.set, it.printing), it.cond, it.qty, q.market == null ? "" : q.market.toFixed(2), q.low == null ? "" : q.low.toFixed(2), q.price == null ? "" : q.price.toFixed(2), q.price == null ? "" : (q.price * (1 - cfg.rate)).toFixed(2)]; });
+  const csv = [head, ...rows].map(r => r.map(cell).join(",")).join("\r\n");
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = "pokemon-sell-list.csv"; a.click();
+}
+
+// Add cards you already hold to the sell list
+const sldg = $("sldg");
+function openSellFromPortfolio() {
+  const have1 = holds.filter(h => !sells.some(s => s.set === h.set && s.num === h.num && s.printing === h.printing && s.cond === h.cond));
+  $("slbody").innerHTML = `<div class="addhead"><h3>Add from my Portfolio</h3><button type="button" id="slclose" aria-label="Close">✕</button></div>
+    ${have1.length ? `<p class="muted">Tick the cards you want to price. They keep the printing, condition and quantity from your Portfolio, and you can change them on the sell list.</p>
+      <div class="picklist">${have1.map(h => `<label class="pickrow"><input type="checkbox" data-id="${h.id}"><img src="${holdingThumb(h)}" alt=""><span>${esc(h.name)} ×${h.qty}<small>${esc(h.setName || h.set)} · ${esc(h.num)} · ${esc(finishLabel(h.set, h.printing))} · ${COND_SHORT[h.cond]}</small></span></label>`).join("")}</div>
+      <div class="btnrow"><button type="button" class="primary" id="sladd">Add selected</button><button type="button" id="slall">Select all</button></div>`
+      : `<p class="muted" style="padding:16px 0">${holds.length ? "All of your Portfolio cards are already on the sell list." : "Your Portfolio is empty. Use + Add card to search any card, or add cards to your Portfolio first."}</p>`}`;
+  sldg.showModal();
+  $("slclose").onclick = () => sldg.close();
+  if (have1.length) {
+    $("slall").onclick = () => sldg.querySelectorAll(".pickrow input").forEach(i => { i.checked = true; });
+    $("sladd").onclick = () => {
+      const ids = [...sldg.querySelectorAll(".pickrow input:checked")].map(i => i.dataset.id);
+      for (const h of have1.filter(x => ids.includes(x.id))) sells.push({ id: uid(), set: h.set, num: h.num, name: h.name, setName: h.setName, printing: h.printing, cond: h.cond, qty: h.qty });
+      saveSells(); sldg.close(); renderSell(); maybeRefreshSells();
+      toast(ids.length ? `Added ${ids.length} card${ids.length === 1 ? "" : "s"} to the sell list.` : "No cards ticked.");
+    };
+  }
+}
+sldg.addEventListener("click", e => { if (e.target === sldg) sldg.close(); });
+
 // ---- view switching ----
 let view = load(VKEY, "sets");   // first-time visitors land on the set checklists; later visits remember the last tab
 function showView(v) {
+  if (!["sets", "portfolio", "sell"].includes(v)) v = "sets";
   view = v; store(VKEY, v);
-  $("view-port").hidden = v !== "portfolio"; $("view-sets").hidden = v !== "sets"; $("setsHead").hidden = v !== "sets";
+  $("view-port").hidden = v !== "portfolio"; $("view-sets").hidden = v !== "sets"; $("view-sell").hidden = v !== "sell"; $("setsHead").hidden = v !== "sets";
+  $("viewtitle").textContent = { sets: "Sets", portfolio: "Portfolio", sell: "Prepare to sell" }[v];
   document.querySelectorAll("#mainnav button").forEach(b => { b.classList.toggle("on", b.dataset.v === v); b.setAttribute("aria-current", b.dataset.v === v ? "page" : "false"); });
-  if (v === "portfolio") { renderPortfolio(); maybeRefreshHeld(); } else render();
+  document.body.classList.remove("side-open");
+  if (v === "portfolio") { renderPortfolio(); maybeRefreshHeld(); } else if (v === "sell") { renderSell(); maybeRefreshSells(); } else render();
   syncSticky(); requestAnimationFrame(syncSticky);
 }
 document.querySelectorAll("#mainnav button").forEach(b => b.onclick = () => showView(b.dataset.v));
